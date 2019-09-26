@@ -2,12 +2,11 @@ clear all;
 
 load data-starplus-04847-v7.mat;
 
-% only returns the IDM for the 7 ROIs{'CALC' 'LDLPFC' 'LIPL' 'LIPS' 'LOPER' 'LT' 'LTRIA'}
-[info,data,meta] = transformIDM_selectROIVoxels(info,data,meta,{'CALC' 'LDLPFC' 'LIPL' 'LIPS' 'LOPER' 'LT' 'LTRIA'});
+%Function to get the unbalanced label dataset(i.e.only two labels 1 or 2 aretaken
+[info,data,meta] = transformIDM_selectROIVoxels(info,data,meta,{'CALC','LFEF','LIPL','LIT','LPPREC','LSPL','LTRIA','RFEF','RIPS','ROPER','RSGA','RT','SMA','LDLPFC','LIPS','LOPER','LSGA','LT','RDLPFC','RIPL','RIT','RPPREC','RSPL','RTRIA'});
 
 %Function to get the Balanced label dataset(i.e.only two labels 1 or 2 aretaken
 [example1,labels,expInfo] = idmToExamples_stimulus(info,data,meta,'full');
-
 %Extracting number of rows and columns from the dataset
 nrows2 = size(example1,1);
 ncols = size(example1,2);
@@ -80,7 +79,7 @@ end
 %asymptotic analysis
 %A function naseeb_TransitionProbability is created so that the value of n
 %is taken as input arguments to compute the n-step transition probability.
-[pr_matrix_n_final] = naseeb_TransitionProbability(30);
+[pr_matrix_n_final] = naseeb_TransitionProbability(100);
 
 % Create a new matrix to represent all the n-step transition probability
 % matrix.
@@ -92,7 +91,7 @@ col_1 = scmatrix(:,1); %extract the first column of state change matrix to initi
 %pr_matrix_n_final observation.
 for obs = 1:50
     for row = 1:4  %since, 50 should be looped 4 times for 200 values required.
-        for column = 1:92608
+        for column = 1:92609
             new_row = row + (4*(obs-1)); % create new row of all the probability values such that there are total of 200 rows
             asymp_matrix(new_row,1) = col_1(obs,1);
             new_mat= pr_matrix_n_final{obs}; %assign new_mat matrix the value of pr_matrix_n_final for all probabilities
@@ -108,7 +107,7 @@ for obs = 1:50
                 if (r <= new_mat(2,1)) % access values of probabilities at place (1,2), and if the value is equal or greater to random number between 0 and 1, then assign the values to 1 or else, assign to 0
                     asymp_matrix(new_row,column+1)=0; 
                 else
-                    asymp_matrix(new_row,column+1)=1;
+                      asymp_matrix(new_row,column+1)=1;
                 end
             end
         end
@@ -171,8 +170,8 @@ testLabels    = dataTesting(:,92610);
 
 % train a classifier
 % [classifier] = trainClassifier(trainExamples,trainLabels,'nbayes');
-% [classifier] = trainClassifier(trainExamples,trainLabels,'logisticRegression');
-[classifier] = trainClassifier(trainExamples,trainLabels,'SMLR');
+  [classifier] = trainClassifier(trainExamples,trainLabels,'logisticRegression');
+% [classifier] = trainClassifier(trainExamples,trainLabels,'SMLR');
 % [classifier] = trainClassifier(trainExamples,trainLabels,'neural');
 
 % apply a classifier
@@ -181,4 +180,3 @@ testLabels    = dataTesting(:,92610);
 % summarizePredictions
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'accuracy',testLabels);
 result{1}
-

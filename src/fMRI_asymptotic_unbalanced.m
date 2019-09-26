@@ -5,8 +5,8 @@ load data-starplus-04847-v7.mat;
 % only returns the IDM for the 7 ROIs{'CALC' 'LDLPFC' 'LIPL' 'LIPS' 'LOPER' 'LT' 'LTRIA'}
 [info,data,meta] = transformIDM_selectROIVoxels(info,data,meta,{'CALC' 'LDLPFC' 'LIPL' 'LIPS' 'LOPER' 'LT' 'LTRIA'});
 
-%Function to get the Balanced label dataset(i.e.only two labels 1 or 2 aretaken
-[example1,labels,expInfo] = idmToExamples_stimulus(info,data,meta,'full');
+%Function to get the unbalanced label dataset(i.e.only two labels 1 or 2 aretaken
+[example1,labels,expInfo] = idmToExamples_fixation(info,data,meta,'full');
 
 %Extracting number of rows and columns from the dataset
 nrows2 = size(example1,1);
@@ -80,7 +80,7 @@ end
 %asymptotic analysis
 %A function naseeb_TransitionProbability is created so that the value of n
 %is taken as input arguments to compute the n-step transition probability.
-[pr_matrix_n_final] = naseeb_TransitionProbability(30);
+[pr_matrix_n_final] = naseeb_TransitionProbability(100);
 
 % Create a new matrix to represent all the n-step transition probability
 % matrix.
@@ -171,9 +171,9 @@ testLabels    = dataTesting(:,92610);
 
 % train a classifier
 % [classifier] = trainClassifier(trainExamples,trainLabels,'nbayes');
-% [classifier] = trainClassifier(trainExamples,trainLabels,'logisticRegression');
-[classifier] = trainClassifier(trainExamples,trainLabels,'SMLR');
-% [classifier] = trainClassifier(trainExamples,trainLabels,'neural');
+%[classifier] = trainClassifier(trainExamples,trainLabels,'logisticRegression');
+ [classifier] = trainClassifier(trainExamples,trainLabels,'SMLR');
+ % [classifier] = trainClassifier(trainExamples,trainLabels,'neural');
 
 % apply a classifier
 [predictions] = applyClassifier(testExamples,classifier);
@@ -181,4 +181,3 @@ testLabels    = dataTesting(:,92610);
 % summarizePredictions
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'accuracy',testLabels);
 result{1}
-
